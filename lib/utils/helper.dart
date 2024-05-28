@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:threads_clone/utils/env.dart';
 import 'package:threads_clone/widgets/confirm_dialog.dart';
 import 'package:uuid/uuid.dart';
@@ -47,5 +48,20 @@ String getStorageBucketUrl(String path) {
 
 //confirm dialog
 void confirmDialog(String title, String text, VoidCallback callback) {
-  Get.dialog(ConfirmDialog(text: text,title: title,callback: callback,));
+  Get.dialog(ConfirmDialog(
+    text: text,
+    title: title,
+    callback: callback,
+  ));
+}
+
+String formateDateFromNow(String date) {
+  // parse utc timestampe to datetime
+  DateTime utcDateTime = DateTime.parse(date.split("+")[0].trim());
+
+  // convert to utc to ist
+  DateTime istDateTime = utcDateTime.add(Duration(hours: 5, minutes: 30));
+
+  //formate date
+  return Jiffy.parseFromDateTime(istDateTime).fromNow();
 }

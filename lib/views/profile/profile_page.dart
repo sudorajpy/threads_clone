@@ -5,13 +5,30 @@ import 'package:threads_clone/routes/route.dart';
 import 'package:threads_clone/routes/route_name.dart';
 import 'package:threads_clone/services/supabase_service.dart';
 import 'package:threads_clone/utils/styles/button_style.dart';
+import 'package:threads_clone/widgets/comment_card.dart';
 import 'package:threads_clone/widgets/image_circle.dart';
+import 'package:threads_clone/widgets/post_card.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   ProfilePage({super.key});
 
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
   final profileController = Get.put(ProfileController());
+
   final SupabaseService supabaseService = Get.find<SupabaseService>();
+
+  @override
+  void initState() {
+    if (supabaseService.currentUser.value != null) {
+      profileController.fetchPosts(supabaseService.currentUser.value!.id!);
+      profileController.fetchReplies(supabaseService.currentUser.value!.id!);
+    }
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,13 +72,15 @@ class ProfilePage extends StatelessWidget {
                                     ),
                                     SizedBox(
                                         width: context.width * .7,
-                                        child: Text("${supabaseService.currentUser.value!.userMetadata?['description'] ?? ''}"))
+                                        child: Text(
+                                            "${supabaseService.currentUser.value!.userMetadata?['description'] ?? ''}"))
                                   ],
                                 )),
-                           ImageCircle(
-                      radius: 40,
-                      url: supabaseService.currentUser.value?.userMetadata?['image'],
-                    ),
+                            ImageCircle(
+                              radius: 40,
+                              url: supabaseService
+                                  .currentUser.value?.userMetadata?['image'],
+                            ),
                           ],
                         ),
                         SizedBox(
@@ -113,10 +132,65 @@ class ProfilePage extends StatelessWidget {
               ];
             },
             body: TabBarView(
-              children: [Text("I am threads"), Text("I am replies")],
+              children: [
+                Obx(() => SingleChildScrollView(
+                  // controller: controller,
+                  child: Column(
+                    children: [
+                      SizedBox(height: 10,),
+                      if (profileController.postLoading.value)
+                        Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      else if(profileController.posts.isNotEmpty)
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: BouncingScrollPhysics(),
+                        itemCount: profileController.posts.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return PostCardWidget(
+                            authCard: true,
+                            deleteCallBack: profileController.deletePost,
+                            post: profileController.posts[index],);
+                        },
+                      )
+                      else
+                      Text("No Posts found")
+                    ],
+                  ),
+                ),), 
+                Obx(() => SingleChildScrollView(
+                  // controller: controller,
+                  padding: EdgeInsets.symmetric(vertical: 10),
+                  child: Column(
+                    children: [
+                      SizedBox(height: 10,),
+                      if (profileController.replyLoading.value)
+                        Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      else if(profileController.replies.isNotEmpty)
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: BouncingScrollPhysics(),
+                        itemCount: profileController.replies.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return CommentCard(
+                            reply: profileController.replies[index],
+                          );
+                        },
+                      )
+                      else
+                      Text("No Replies found")
+                    ],
+                  ),
+                ),)
+                ],
             ),
           ),
         ));
+  
+  
   }
 }
 

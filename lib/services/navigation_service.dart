@@ -13,10 +13,10 @@ class NavigationService extends GetxService {
   //all pages
   List<Widget> pages() {
     return [
-      const HomePage(),
+       HomePage(),
       const SearchPage(),
-      const AddThreadsPage(),
-      const NotificationPage(),
+      AddThreadsPage(),
+      NotificationPage(),
       ProfilePage()
     ];
   }
@@ -25,5 +25,11 @@ class NavigationService extends GetxService {
   updateIndex(int index) {
     lastIndex.value = currentIndex.value;
     currentIndex.value = index;
+  }
+
+
+  //back to previous page
+  backToPreviousPage() {
+    currentIndex.value = lastIndex.value;
   }
 }
