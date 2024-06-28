@@ -7,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:threads_clone/controllers/auth_controller.dart';
 import 'package:threads_clone/routes/route_name.dart';
+import 'package:threads_clone/utils/helper.dart';
 import 'package:threads_clone/widgets/auth_input.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -20,6 +21,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   var emailController = TextEditingController();
   var passwordController = TextEditingController();
   var cpasswordController = TextEditingController();
+  var userNameController = TextEditingController();
   var nameController = TextEditingController();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -31,6 +33,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     emailController.dispose();
     passwordController.dispose();
     nameController.dispose();
+    userNameController.dispose();
     super.dispose();
   }
 
@@ -57,12 +60,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
+                          const Text(
                             "Register",
                             style: TextStyle(
                                 fontSize: 24, fontWeight: FontWeight.bold),
                           ),
-                          Text("Welcome to the threads world"),
+                          const Text("Welcome to the threads world"),
                           const SizedBox(height: 10),
                           AuthInput(
                             validator: ValidationBuilder()
@@ -73,6 +76,28 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             controller: nameController,
                             label: "Name",
                             hintText: "Enter your name",
+                          ),
+                          const SizedBox(
+                            height: 10,
+                          ),
+                          Obx(
+                            () => AuthInput(
+                              validator: ValidationBuilder()
+                                  .required()
+                                  .minLength(3)
+                                  .maxLength(50)
+                                  .build(),
+                              controller: userNameController,
+                              isUnique: authController.isUnique.value,
+                              onChanged: (value) {
+                                if (value.length >= 3) {
+                                  authController.checkUserName(value);
+                                }
+                              },
+                              isUsername: true,
+                              label: "Username",
+                              hintText: "Enter your username",
+                            ),
                           ),
                           const SizedBox(height: 10),
                           AuthInput(
@@ -113,22 +138,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             () => ElevatedButton(
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
-                                  authController.register(
-                                      name: nameController.text.trim(),
-                                      email: emailController.text.trim(),
-                                      password: passwordController.text.trim());
+                                  if (authController.isUnique.value) {
+                                    authController.register(
+                                        username:
+                                            userNameController.text.trim(),
+                                        name: nameController.text.trim(),
+                                        email: emailController.text.trim(),
+                                        password:
+                                            passwordController.text.trim());
+                                  } else {
+                                    showSnackBar(
+                                        title: "Error",
+                                        message: "Username should be unique");
+                                  }
                                 }
                               },
+                              style: ElevatedButton.styleFrom(
+                                minimumSize: const Size(double.infinity, 50),
+                              ),
                               child: authController.registerLoading.value
-                                  ? Center(
+                                  ? const Center(
                                       child: CircularProgressIndicator(
                                         color: Colors.black,
                                       ),
                                     )
-                                  : Text("Register"),
-                              style: ElevatedButton.styleFrom(
-                                minimumSize: Size(double.infinity, 50),
-                              ),
+                                  : const Text("Register"),
                             ),
                           ),
                           const SizedBox(height: 20),
@@ -140,7 +174,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       children: [
                         TextSpan(
                           text: "Login",
-                          style: TextStyle(
+                          style: const TextStyle(
                             // color: Colors.blue,
                             fontWeight: FontWeight.bold,
                           ),

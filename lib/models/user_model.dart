@@ -28,6 +28,7 @@ class Metadata {
   String? name;
   String? email;
   String? image;
+  var username;
   String? description;
   bool? emailVerified;
   bool? phoneVerified;
@@ -35,6 +36,7 @@ class Metadata {
   Metadata(
       {this.sub,
       this.name,
+      this.username,
       this.email,
       this.image,
       this.description,
@@ -46,6 +48,7 @@ class Metadata {
     name = json['name'];
     email = json['email'];
     image = json['image'];
+    username = json['username'];
     description = json['description'];
     emailVerified = json['email_verified'];
     phoneVerified = json['phone_verified'];
@@ -57,6 +60,7 @@ class Metadata {
     data['name'] = name;
     data['email'] = email;
     data['image'] = image;
+    data['username'] = username;
     data['description'] = description;
     data['email_verified'] = emailVerified;
     data['phone_verified'] = phoneVerified;

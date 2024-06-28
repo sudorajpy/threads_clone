@@ -8,7 +8,7 @@ class SearchUserController extends GetxController {
   var loading = false.obs;
   var notFound = false.obs;
   RxList<UserModel> users = <UserModel>[].obs;
-  Timer? _debounce;
+  Timer? _debounce; 
 
   searchUser(String name) async {
     loading.value = true;

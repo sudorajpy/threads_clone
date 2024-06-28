@@ -6,6 +6,7 @@ import 'package:threads_clone/views/chat/chat_room.dart';
 import 'package:threads_clone/views/chat/inbox_screen.dart';
 import 'package:threads_clone/views/home.dart';
 import 'package:threads_clone/views/profile/edit_profile.dart';
+import 'package:threads_clone/views/profile/followers_list.dart';
 import 'package:threads_clone/views/profile/show_user.dart';
 import 'package:threads_clone/views/replies/add_reply.dart';
 import 'package:threads_clone/views/settings/settings.dart';
@@ -67,6 +68,11 @@ class Routes {
     GetPage(
       name: RouteNames.inbox,
       page: () => InboxScreen(),
+      transition: Transition.leftToRight,
+    ),
+    GetPage(
+      name: RouteNames.followersList,
+      page: () => FollowersListScreen(),
       transition: Transition.leftToRight,
     ),
   ];

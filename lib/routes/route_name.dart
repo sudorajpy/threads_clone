@@ -10,6 +10,7 @@ class RouteNames {
   static const String showUser = '/showUser';
   static const String chatroom = '/chatroom';
   static const String inbox = '/inbox';
+  static const String followersList = '/followersList';
 
 
 
